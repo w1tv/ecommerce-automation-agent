@@ -1,0 +1,36 @@
+# Playwright 浏览器自动化核心
+playwright==1.42.0
+pytest-playwright==0.4.4
+
+# 【新增】反检测支持 - 隐藏 Playwright 自动化特征
+playwright-stealth==1.0.6
+
+# 异步支持
+aiohttp==3.9.3
+asyncio-throttle==1.0.2
+
+# 配置文件
+PyYAML==6.0.1
+
+# HTTP 请求（用于打印接口和 webhook）
+requests==2.31.0
+httpx==0.26.0
+
+# 日志
+loguru==0.7.2
+
+# 定时任务
+APScheduler==3.10.4
+
+# 调试辅助
+screenshot-on-failure==0.0.6
+
+# 类型提示
+typing-extensions==4.9.0
+
+# JSON 处理
+orjson==3.9.13
+
+# 时间处理
+python-dateutil==2.8.2
+pytz==2024.1

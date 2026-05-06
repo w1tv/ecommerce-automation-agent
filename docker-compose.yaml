@@ -1,0 +1,118 @@
+# =============================================
+# Docker Compose 配置
+# 电商自动化 Agent
+# =============================================
+# 【修复内容】
+# 1. 确保数据卷配置完整
+# 2. 修复假健康检查
+# 3. 增加资源限制
+# 4. 增加环境变量配置示例
+
+version: '3.8'
+
+services:
+  # =============================================
+  # 电商自动化 Agent 服务
+  # =============================================
+  ecommerce-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ecommerce-agent
+    
+    # 【修复】重启策略
+    restart: unless-stopped
+    
+    # 环境变量配置
+    environment:
+      - TZ=Asia/Shanghai
+      - PYTHONUNBUFFERED=1
+      # 数据库配置（可选）
+      # - DB_HOST=localhost
+      # - DB_PORT=3306
+      # - DB_USER=root
+      # - DB_PASSWORD=${DB_PASSWORD}
+    
+    # 【修复】完整的卷挂载配置
+    volumes:
+      # 配置文件（确保在挂载前已配置好）
+      - ./config.yaml:/app/config.yaml:ro
+      
+      # 数据目录持久化 - 订单数据
+      - ecommerce-data:/app/data
+      
+      # 日志目录
+      - ./logs:/app/logs
+      
+      # 下载目录（快递单模板等）
+      - ./downloads:/app/downloads
+      
+      # Session 目录（Cookie 持久化）
+      - ecommerce-sessions:/app/data/sessions
+      
+      # 截图目录
+      - ecommerce-screenshots:/app/logs/screenshots
+    
+    # 【修复】资源限制
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    
+    # 网络配置
+    networks:
+      - ecommerce-network
+    
+    # 【修复】真正的健康检查
+    healthcheck:
+      test: ["CMD", "python", "/app/scripts/healthcheck.py"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    
+    # 日志配置
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+
+  # =============================================
+  # 可选：本地打印服务（仅在使用自动打印功能时启用）
+  # =============================================
+  # print-service:
+  #   build:
+  #     context: ./print-service
+  #     dockerfile: Dockerfile
+  #   container_name: ecommerce-print-service
+  #   restart: unless-stopped
+  #   ports:
+  #     - "8080:8080"
+  #   environment:
+  #     - TZ=Asia/Shanghai
+  #   networks:
+  #     - ecommerce-network
+
+# =============================================
+# 数据卷定义
+# =============================================
+volumes:
+  # 持久化数据卷
+  ecommerce-data:
+    driver: local
+  ecommerce-sessions:
+    driver: local
+  ecommerce-screenshots:
+    driver: local
+
+# =============================================
+# 网络配置
+# =============================================
+networks:
+  ecommerce-network:
+    driver: bridge

@@ -1,0 +1,103 @@
+# =============================================
+# Python
+# =============================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# 虚拟环境
+venv/
+ENV/
+env/
+.venv/
+
+# PyInstaller
+*.manifest
+*.spec
+
+# =============================================
+# IDE
+# =============================================
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# =============================================
+# 日志和数据
+# =============================================
+logs/
+*.log
+
+data/orders/*.json
+data/refunds/*.json
+data/print_tasks/*.json
+data/sessions/*.json
+
+# 截图
+logs/screenshots/*.png
+
+# 下载文件
+downloads/*
+
+# 临时文件
+*.tmp
+*.bak
+*.cache
+
+# =============================================
+# 配置（包含敏感信息）
+# =============================================
+config.yaml
+config.local.yaml
+*.local.yaml
+
+# 环境变量文件
+.env
+.env.local
+.env.*.local
+
+# =============================================
+# Docker
+# =============================================
+.dockerignore
+
+# 构建产物
+*.tar
+*.tar.gz
+
+# =============================================
+# 测试和调试
+# =============================================
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+.hypothesis/
+
+# =============================================
+# 其他
+# =============================================
+*.pid
+*.lock
+.pid
