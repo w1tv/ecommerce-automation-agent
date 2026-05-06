@@ -1,0 +1,257 @@
+# =============================================
+# 电商自动化 Agent 配置文件
+# =============================================
+# 说明：请根据实际电商平台修改选择器和配置
+# 注意：支持 ${ENV_VAR} 语法引用环境变量
+
+# 全局配置
+global:
+  # 调试模式（开启后会保存更多截图和日志）
+  debug: false
+  
+  # 每个店铺任务之间的休息间隔（秒）
+  shop_rest_interval: 10
+  
+  # 失败重试次数
+  max_retry: 3
+  
+  # 重试间隔（秒）
+  retry_interval: 30
+  
+  # 页面加载超时时间（秒）
+  page_timeout: 30
+  
+  # 元素等待超时时间（秒）
+  element_timeout: 10
+
+# 定时任务调度配置
+schedule:
+  # 启用 APScheduler 调度器
+  enabled: true
+  
+  # 订单抓取间隔（分钟）
+  order_fetch_interval: 5
+  
+  # 退款处理间隔（分钟）
+  refund_process_interval: 10
+  
+  # 心跳检测间隔（秒）
+  heartbeat_interval: 60
+  
+  # 是否在启动时立即执行一次任务
+  run_on_startup: true
+
+# Session 持久化配置
+session:
+  # 启用 Session/Cookie 持久化
+  enabled: true
+  
+  # Cookie 存储目录
+  storage_path: "./data/sessions"
+  
+  # Cookie 有效期（天），超过则重新登录
+  cookie_max_age_days: 7
+
+# 浏览器配置
+browser:
+  # 浏览器类型：chromium, firefox, webkit
+  type: chromium
+  
+  # 是否使用无头模式（后台运行建议开启）
+  headless: true
+  
+  # 是否禁用图片加载（加速）
+  disable_images: false
+  
+  # 视口大小
+  viewport:
+    width: 1920
+    height: 1080
+  
+  # 用户代理字符串
+  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+  
+  # 下载路径
+  download_path: "./downloads"
+  
+  # 反检测配置
+  stealth:
+    # 启用 stealth 补丁
+    enabled: true
+    
+    # 随机操作延迟（毫秒）
+    random_delay_min: 100
+    random_delay_max: 500
+
+# 验证码配置
+captcha:
+  # 检测验证码
+  detect_enabled: true
+  
+  # 验证码选择器（多个用逗号分隔）
+  selectors:
+    - ".captcha-container"
+    - "#captcha"
+    - ".geetest_panel"
+    - ".nc_wrapper"
+    - "[class*='captcha']"
+    - "[id*='captcha']"
+  
+  # 检测到验证码时的处理方式
+  # wait: 等待人工处理（暂停该店铺）
+  # alert: 发送告警后继续
+  # skip: 跳过并记录
+  action: "wait"
+  
+  # 等待超时时间（秒），超时后跳过
+  wait_timeout: 300
+
+# 告警配置
+alerter:
+  # 是否启用告警
+  enabled: true
+  
+  # 告警渠道
+  channels:
+    # 钉钉 webhook
+    dingtalk:
+      enabled: false
+      webhook_url: "${DINGTALK_WEBHOOK_URL}"
+      
+    # 企业微信 webhook
+    wecom:
+      enabled: false
+      webhook_url: "${WECOM_WEBHOOK_URL}"
+      
+    # 飞书 webhook  
+    feishu:
+      enabled: false
+      webhook_url: "${FEISHU_WEBHOOK_URL}"
+      
+  # 告警事件配置
+  events:
+    # 登录失败告警
+    login_failed: true
+    # 连续异常告警
+    consecutive_errors: true
+    # 心跳超时告警
+    heartbeat_timeout: true
+    # 退款处理异常告警
+    refund_error: true
+    # 新订单通知（可选）
+    new_order: false
+
+# 快递配置
+express:
+  # 是否启用 API 打印
+  api_enabled: false
+  
+  # API 配置
+  api_url: ""
+  api_key: ""
+  
+  # 默认快递公司
+  default_courier: "SF"
+  
+  # 电子面单客户信息（按需配置）
+  customer:
+    name: ""
+    code: ""
+    password: ""
+    month_code: ""
+    send_site: ""
+    send_staff: ""
+
+# 店铺配置（可配置多个店铺）
+shops:
+  - name: "店铺A"
+    # 电商平台类型：taobao, tmall, jd, pdd, douyin
+    platform: tmall
+    
+    # 登录URL
+    login_url: "https://seller.tmall.com/login.htm"
+    
+    # 登录凭证（建议使用环境变量或密钥管理）
+    # 使用 ${ENV_VAR} 语法引用环境变量
+    credentials:
+      username: "${SHOP_USERNAME}"
+      password: "${SHOP_PASSWORD}"
+    
+    # 页面选择器配置（根据实际页面结构调整）
+    selectors:
+      # 登录页面
+      login:
+        username_input: "#username"
+        password_input: "#password"
+        submit_button: "#login-btn"
+        captcha_container: ".captcha-container"
+        # 登录成功标志元素（检测是否仍在登录页）
+        success_indicator:
+          - ".seller-center"
+          - "#seller-home"
+          - ".main-content"
+      
+      # 订单页面
+      order:
+        list_url: "https://trade.tmall.com/order/list.htm"
+        order_item: ".order-item"
+        order_id: ".order-id"
+        status: ".order-status"
+        buyer_name: ".buyer-name"
+        total_amount: ".total-amount"
+        next_page: ".pagination-next"
+      
+      # 退货退款页面
+      refund:
+        list_url: "https://Refund.tmall.com/refund_list.htm"
+        refund_item: ".refund-item"
+        refund_id: ".refund-id"
+        reason: ".refund-reason"
+        amount: ".refund-amount"
+        status: ".refund-status"
+        reason_detail: ".reason-detail"
+        images: ".evidence-images img"
+        approve_button: ".btn-approve"
+        reject_button: ".btn-reject"
+        next_page: ".pagination-next"
+        
+      # 快递单打印页面
+      print:
+        print_url: "https://print.tmall.com/express_print.htm"
+        order_input: "#order-search"
+        search_button: "#search-btn"
+        print_button: ".btn-print"
+    
+    # 订单抓取配置
+    order_fetch:
+      enabled: true
+      interval: 5  # 分钟
+      status_filter: "wait_send"  # wait_pay, wait_send, wait_receive, completed
+      max_orders: 100
+      save_path: "./data/orders"
+    
+    # 退款处理配置
+    refund_rules:
+      enabled: true
+      # 自动审批规则
+      auto_approve:
+        enabled: true
+        # 金额阈值（元），以下自动通过
+        max_amount: 50
+        # 仅退款自动通过，退货退款需要审核
+        refund_only: true
+        # 特定原因自动通过
+        auto_approve_reasons:
+          - "缺货"
+          - "不想要了"
+          - "拍多了"
+      # 自动拒绝规则
+      auto_reject:
+        enabled: false
+        reasons: []
+    
+    # 心跳检测配置（覆盖全局配置）
+    heartbeat:
+      enabled: true
+      interval: 60
+      failure_threshold: 3
